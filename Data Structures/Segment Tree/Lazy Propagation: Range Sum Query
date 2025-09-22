@@ -1,0 +1,66 @@
+#include <bits/stdc++.h>
+#define int long long
+using namespace std;
+vector<int>range(100001,0), tree(400001,0), lazy(400001,0);
+void push(int l, int r, int mid, int pos){
+    tree[pos*2+1]+=lazy[pos]*(mid-l+1);
+    tree[pos*2+2]+=lazy[pos]*(r-mid);
+    lazy[pos*2+1]+=lazy[pos]; lazy[pos*2+2]+=lazy[pos];
+    lazy[pos]=0;
+}
+void con(int l, int r, int pos){
+    if(l==r){
+        tree[pos]=range[l];
+        return;
+    }
+    int mid=(l+r)/2;
+    con(l,mid,pos*2+1); con(mid+1,r,pos*2+2);
+    tree[pos]=tree[pos*2+1]+tree[pos*2+2];
+}
+int qu(int ql, int qr, int l, int r, int pos){
+    if(l>qr||r<ql){
+        return 0;
+    }
+    if(l>=ql&&r<=qr){
+        return tree[pos];
+    }
+    int mid=(l+r)/2;
+    push(l,r,mid,pos);
+    return qu(ql,qr,l,mid,pos*2+1)+qu(ql,qr,mid+1,r,pos*2+2);
+}
+void up(int ql, int qr, int l, int r, int pos, int val){
+    if(l>qr||r<ql){
+        return;
+    }
+    if(l>=ql&&r<=qr){
+        tree[pos]+=(r-l+1)*val;
+        lazy[pos]+=val;
+        return;
+    }
+    int mid=(l+r)/2;
+    push(l,r,mid,pos);
+    up(ql,qr,l,mid,pos*2+1,val); up(ql,qr,mid+1,r,pos*2+2,val);
+    tree[pos]=tree[pos*2+1]+tree[pos*2+2];
+}
+signed main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n,q,t;
+    cin >> n >> q;
+    for(int i=1; i<=n; i++){
+        cin >> range[i];
+    }
+    con(0,100001,0);
+    for(int i=0; i<q; i++){
+        cin >> t;
+        if(t==1){
+            int val,x,y;
+            cin >> x >> y >> val;
+            up(x,y,0,100001,0,val);
+        }else{
+            int x,y;
+            cin >> x >> y;
+            cout << qu(x,y,0,100001,0) << '\n';
+        }
+    }
+}
