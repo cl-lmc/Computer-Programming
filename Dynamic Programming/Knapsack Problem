@@ -1,0 +1,27 @@
+#include <bits/stdc++.h>
+#define f first
+#define s second
+using namespace std;
+int main() {
+    int n,m,ma=0;
+    cin >> n >> m;
+    vector<pair<int,int>>udon(n+1);
+    for(int i=1; i<=n; i++){
+        cin >> udon[i].f >> udon[i].s;
+    }
+    sort(udon.begin(),udon.end());
+    int dp[n+1][m+1];
+    memset(dp,0,sizeof(dp));
+    for(int j=1; j<=n; j++){ //thing
+        for(int i=0; i<=m; i++){ //value
+            if(udon[j].f>i){
+                dp[j][i]=max(dp[j][max(0,i-1)],dp[j-1][i]);
+            }else{
+                dp[j][i]=max(dp[j-1][i-udon[j].f]+udon[j].s,dp[j-1][i]);
+            }
+            ma=max(ma,dp[j][i]);
+        }
+    }
+    cout << ma << endl;
+    return 0;
+}
