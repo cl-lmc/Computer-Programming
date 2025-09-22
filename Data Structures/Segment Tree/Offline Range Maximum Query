@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+vector<int>num(100001,0), tree(400001,0);
+void build(int l, int r, int pos){
+    if(l==r){
+        tree[pos]=num[l];
+        return;
+    }
+    int mid=(l+r)/2;
+    build(l,mid,pos*2+1); build(mid+1,r,pos*2+2);
+    tree[pos]=max(tree[pos*2+1],tree[pos*2+2]);
+    return;
+}
+int que(int l, int r, int ql, int qr, int pos){
+    if(qr<l||ql>r){
+        return 0;
+    }
+    if(ql<=l&&qr>=r){
+        return tree[pos];
+    }
+    int mid=(l+r)/2;
+    return max(que(l,mid,ql,qr,pos*2+1),que(mid+1,r,ql,qr,pos*2+2));
+}
+int main() {
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int n,q;
+    cin >> n >> q;
+    for(int i=0; i<n; i++){
+        cin >> num[i];
+    }
+    build(0,100001,0);
+    for(int i=0; i<q; i++){
+        int x,y;
+        cin >> x >> y;
+        cout << que(0,100001,x-1,y-1,0) << '\n';
+    }
+    return 0;
+}
